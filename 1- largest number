@@ -1,0 +1,55 @@
+class CustomSort implements Comparator<String> {
+    
+   
+    
+    @Override
+    public int compare(String strA, String strB) {
+        String outcome1 = strA + strB;
+        String outcome2 = strB + strA;
+        
+       
+        return outcome2.compareTo(outcome1);
+    }
+}
+
+class Solution {
+    
+    public void intToString(String[] numsStr, int[] nums) {
+        
+       
+        for (int i=0; i<nums.length; i++) {
+            numsStr[i] = String.valueOf(nums[i]);
+        }
+    }
+    
+    public String arrayToString(String[] numsStr) {
+        
+        
+        StringBuilder ans = new StringBuilder();
+        
+        
+        for (String letter: numsStr) {
+            ans.append(letter);
+        }
+        
+        return ans.toString();
+    }
+    
+    public String largestNumber(int[] nums) {
+        
+       
+        String[] numsStr = new String[nums.length];
+        intToString(numsStr, nums);
+        
+      
+        Arrays.sort(numsStr, new CustomSort());
+        
+     
+        if (numsStr[0].equals("0")) {
+            return "0";
+        }
+        
+      
+        return arrayToString(numsStr);
+    }
+}
