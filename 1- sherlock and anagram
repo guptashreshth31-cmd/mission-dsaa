@@ -1,0 +1,102 @@
+class Result {
+    public static boolean areAnagrams(String x, String y) {
+        // Early exit: lengths must match for anagrams
+        if (x.length() != y.length()) {
+            return false;
+        }
+
+        // Frequency maps for both strings
+        Map<Character, Long> xFreq = x.chars()
+                                      .mapToObj(c -> (char) c)
+                                      .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        Map<Character, Long> yFreq = y.chars()
+                                      .mapToObj(c -> (char) c)
+                                      .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        return xFreq.equals(yFreq);
+    }
+
+    public static boolean containsOtherThanTarget(List<Integer> intLst, 
+                                                  int target) {
+        return intLst.stream().anyMatch(x -> x != target);
+    }
+
+    public static List<Integer> findAllCharOccurrences(String input, char target) {
+        List<Integer> indices = new ArrayList<>();
+
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == target) {
+                indices.add(i);
+            }
+        }
+
+        return indices;
+    }
+
+    /*
+     * Complete the 'sherlockAndAnagrams' function below.
+     *
+     * The function is expected to return an INTEGER.
+     * The function accepts STRING s as parameter.
+     */
+
+    public static int sherlockAndAnagrams(String s) {
+        // Write your code here
+        int numAnagramPairs = 0;
+        
+        // System.err.println(""); System.err.println("");
+        // System.err.println("s = >" + s + "<");
+
+        LinkedHashMap<Character, List<Integer>> chIdxMap = new LinkedHashMap<>();
+        for (int sIdx = 0 ; sIdx < s.length() ; sIdx++) {
+            if (!chIdxMap.containsKey(s.charAt(sIdx))) {
+                chIdxMap.put(s.charAt(sIdx), 
+                             findAllCharOccurrences(s, s.charAt(sIdx)));
+            }
+        }
+        // System.err.println("chIdxMap = >" + chIdxMap + "<");
+        
+        for (Character chKey : chIdxMap.keySet()) {
+            List<Integer> curChIdxLst = chIdxMap.get(chKey);
+            int n = curChIdxLst.size();
+            int numSingChAnag = (n * (n-1)) / 2;
+            // System.err.println("chKey = >" + chKey + "< | curChIdxLst.size() = >" + 
+            //                    curChIdxLst.size() + "< | numSingChAnag = >" + 
+            //                    numSingChAnag + "<");
+            numAnagramPairs += numSingChAnag;
+        }
+        // System.err.println("After Single Char Anagram Pair Computation :: " + 
+        //                    "numAnagramPairs = >" + numAnagramPairs + "<");
+
+        for (int sIdx = 0 ; sIdx < s.length() ; sIdx++) {
+            List<Integer> curChIdxLst = chIdxMap.get(s.charAt(sIdx));
+            // System.err.println("curChIdxLst = >" + curChIdxLst + "<");
+
+            if (curChIdxLst.size() == 1 || 
+                !containsOtherThanTarget(curChIdxLst, sIdx)) {
+                continue;
+            }
+
+            for (int anaStrLen = 2; (sIdx + anaStrLen) <= s.length() ; anaStrLen++ ) {
+                String selSubStrSrc = s.substring(sIdx, sIdx + anaStrLen);
+                // System.err.println("selSubStrSrc = >" + selSubStrSrc + "<" +
+                //                    " from (" + sIdx + ", " + (sIdx + anaStrLen - 1) + ")");
+
+                for (int cIdx = (sIdx + 1) ; (cIdx + anaStrLen) <= s.length() ; cIdx++) {
+                    String selSubStrTgt = s.substring(cIdx, cIdx + anaStrLen);
+                    // System.err.println("selSubStrTgt = >" + selSubStrTgt + "<" +
+                    //                    " from (" + cIdx + ", " + (cIdx + anaStrLen - 1) + ")");
+                    if (areAnagrams(selSubStrSrc, selSubStrTgt)) {
+                        // System.err.println("Anagram Found!");
+                        numAnagramPairs++;
+                    }
+                }
+            }
+        }
+
+        // System.err.println("numAnagramPairs = >" + numAnagramPairs + "<");
+        return numAnagramPairs;
+    }
+
+}
